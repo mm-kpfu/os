@@ -4,6 +4,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 int main() {
 	pid_t parent_pid = getpid();
@@ -20,8 +21,11 @@ int main() {
 	time(&rawtime);
 	timeinfo = localtime(&rawtime);
 	char formatted[100];
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+
 	strftime(formatted, 100, "%H:%M:%S", timeinfo);
-	printf("My pid: %d\nParent pid: %d\nTime: %s\n\n", getpid(), getppid(), formatted);
+	printf("My pid: %d\nParent pid: %d\nTime: %s:%d\n\n", getpid(), getppid(), formatted, (int) tv.tv_usec / 1000);
 	
 	if (parent_pid == getpid()) {
 		system("ps -x | grep first_process");
