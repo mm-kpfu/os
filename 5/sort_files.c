@@ -6,8 +6,10 @@
 
 
 typedef struct {
-	char location[500];
+	char dir_path[500];
 	char copy_to[500];
+	char location[500];
+	char filename[200];
 	unsigned int mode;
 	int size;
 } FileInfo;
@@ -43,9 +45,10 @@ int getFileInfos(FileInfo *paths, char *dir_path, char *copy_dir_path, int last_
                         last_index = getFileInfos(paths, location, copy_to, last_index);
                 } else {
 			sprintf(paths[last_index].location, "%s", location);
-			sprintf(paths[last_index].copy_to, "%s", copy_to);	
+			sprintf(paths[last_index].copy_to, "%s", copy_dir_path);	
 			paths[last_index].size = st.st_size;
 			paths[last_index].mode = st.st_mode;
+			sprintf(paths[last_index].filename, "%s", dir_struct -> d_name);
                         last_index++;                   
                 }
         }
@@ -81,14 +84,16 @@ void copy(FileInfo *paths, int count) {
 	for (int i = 0; i < count; i++) {
 		FILE *copy_file;
 		FILE *location_file;
-		copy_file = fopen(paths[i].copy_to, "w");
-		location_file = fopen(paths[i].copy_to, "r");
+		char *cp_path;
+		sprintf(cp_path, "%s/%s", paths[i].copy_to, paths[i].filename);
+		copy_file = fopen(cp_path, "w");
+		location_file = fopen(paths[i].location, "r");
 		if (location_file != NULL || copy_file != NULL) {
 			while (!feof(location_file)) {
 				char sym = fgetc(location_file);
 				fputc(sym, copy_file);
 			}
-			printf("Путь до файла %s Размер файла %d\n", paths[i].copy_to, paths[i].size);
+			printf("Путь до файла %s Имя файла %s Размер файла %d\n", paths[i].copy_to, paths[i].filename, paths[i].size);
 		} else {
 			printf("Не удалось скопировать файл %s в %s\n", paths[i].location, paths[i].copy_to);
 			continue;

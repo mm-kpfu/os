@@ -11,6 +11,7 @@
 
 char *BYTES;
 pid_t *PROCESSES;
+int MAX_PROCESSES;
 
 
 int find_bytes_in_file(char *filename) {
@@ -64,6 +65,7 @@ int runProcess(char *filename, pid_t ppid, int process_num) {
 	if (getpid() == ppid) {
 		PROCESSES[process_num] = pid;
 	} else {
+		printf("number %d    ", process_num);
 		find_bytes_in_file(filename);
 	}
 	return 0;
@@ -82,10 +84,24 @@ int readDir(char *dir_path) {
 			if (!strcmp(&dir_path[strlen(dir_path) - 1], "/")) {
 				dir_path[strlen(dir_path) - 1] = '\0';
 			}
-			sprintf(location, "%s/%s", dir_path, dir_struct -> d_name);
-			process_num++;
+			if (process_num == MAX_PROCESSES) {
+				while(1) {
+                                	int result = waitpid(PROCESSES[process_num], 0, WNOHANG);     
+					if (result == PROCESSES[process_num] || result == -1) {
+						break;
+					} else {
+					
+                                                if (process_num < MAX_PROCESSES) {
+                                                        process_num++;
+                                                } else process_num = 1;
+					}
+				}
+			} else process_num++;
+
+                        sprintf(location, "%s/%s", dir_path, dir_struct -> d_name);
 			runProcess(location, getpid(), process_num);
-		}
+			}
+		
 	}
 }
 
@@ -106,14 +122,10 @@ int count_files(char *dir_path) {
 
 
 int main (int argc, char *argv[]) {
+    MAX_PROCESSES = atoi(argv[3]);
     if (atoi(argv[3]) < 1) {
         printf("Processes number must be bigger than 1.");
         return 1;
-    }
-
-    if (count_files(argv[2]) > atoi(argv[3])) {
-	printf("Not enough processes");
-	return 1;
     }
 
     PROCESSES = calloc(sizeof(pid_t), atoi(argv[3]));
