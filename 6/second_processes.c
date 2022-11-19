@@ -33,7 +33,8 @@ int find_bytes_in_file(char *filename) {
         if (BYTES[i] == c) {
 		i++;
 	} else {
-                lseek(fd, total_bytes - i + 1, SEEK_SET);
+		total_bytes = total_bytes - i + 1;
+                lseek(fd, total_bytes, SEEK_SET);
 		i = 0;
 	};
         if (sequence_len == i) {
