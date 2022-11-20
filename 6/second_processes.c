@@ -128,7 +128,7 @@ int main (int argc, char *argv[]) {
         return 1;
     }
 
-    PROCESSES = calloc(sizeof(pid_t), MAX_PROCESSES);
+    PROCESSES = calloc(sizeof(pid_t), atoi(argv[3]));
 
     BYTES = argv[1];
     readDir(argv[2]);
