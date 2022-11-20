@@ -75,7 +75,7 @@ int readDir(char *dir_path) {
         DIR *dir;
         struct dirent *dir_struct;
         dir = opendir(dir_path);
-	int process_num = 0;
+	int process_num = -1;
         while ((dir_struct = readdir(dir)) != NULL) {
                 if (dir_struct -> d_type == DT_DIR) {
                         continue;
