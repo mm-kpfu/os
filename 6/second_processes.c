@@ -93,7 +93,7 @@ int readDir(char *dir_path) {
 					
                                                 if (process_num < MAX_PROCESSES) {
                                                         process_num++;
-                                                } else process_num = 1;
+                                                } else process_num = 0;
 					}
 				}
 			} else process_num++;
@@ -122,13 +122,13 @@ int count_files(char *dir_path) {
 
 
 int main (int argc, char *argv[]) {
-    MAX_PROCESSES = atoi(argv[3]);
+    MAX_PROCESSES = atoi(argv[3]) - 1;
     if (atoi(argv[3]) < 1) {
         printf("Processes number must be bigger than 1.");
         return 1;
     }
 
-    PROCESSES = calloc(sizeof(pid_t), atoi(argv[3]));
+    PROCESSES = calloc(sizeof(pid_t), MAX_PROCESSES);
 
     BYTES = argv[1];
     readDir(argv[2]);
